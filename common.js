@@ -263,10 +263,10 @@ document.querySelectorAll(
 
 });
 
-
-/* =====================================================
-   MOBILE NAVIGATION
-===================================================== */
+/* =========================================
+   MOBILE HAMBURGER MENU
+   BACKGROUND SCROLL LOCK + POSITION RESTORE
+========================================= */
 
 const menuToggle = document.getElementById("menuToggle");
 
@@ -274,42 +274,83 @@ const headerNavigation = document.getElementById(
     "headerNavigation"
 );
 
+let savedScrollPosition = 0;
+
 if (menuToggle && headerNavigation) {
+
+    function openMobileMenu() {
+
+        savedScrollPosition = window.scrollY;
+
+        headerNavigation.classList.add("mobile-open");
+
+        menuToggle.setAttribute("aria-expanded", "true");
+        menuToggle.innerHTML = "&times;";
+
+        // Lock background scrolling
+        document.body.style.position = "fixed";
+        document.body.style.top = `-${savedScrollPosition}px`;
+        document.body.style.width = "100%";
+        document.body.style.overflow = "hidden";
+    }
+
+    function closeMobileMenu() {
+
+        headerNavigation.classList.remove("mobile-open");
+
+        menuToggle.setAttribute("aria-expanded", "false");
+        menuToggle.innerHTML = "☰";
+
+        // Remove background scroll lock
+        document.body.style.position = "";
+        document.body.style.top = "";
+        document.body.style.width = "";
+        document.body.style.overflow = "";
+
+        // Restore previous scroll position
+        window.scrollTo(0, savedScrollPosition);
+    }
 
     menuToggle.addEventListener("click", () => {
 
-        const isOpen = headerNavigation.classList.toggle(
+        const isOpen = headerNavigation.classList.contains(
             "mobile-open"
         );
 
-        menuToggle.setAttribute(
-            "aria-expanded",
-            String(isOpen)
-        );
-
-        menuToggle.innerHTML = isOpen ? "&times;" : "☰";
+        if (isOpen) {
+            closeMobileMenu();
+        } else {
+            openMobileMenu();
+        }
 
     });
 
+    // Close menu after clicking navigation links
     headerNavigation.querySelectorAll("a").forEach(link => {
 
         link.addEventListener("click", () => {
 
-            headerNavigation.classList.remove("mobile-open");
-
-            menuToggle.setAttribute(
-                "aria-expanded",
-                "false"
-            );
-
-            menuToggle.innerHTML = "☰";
+            if (headerNavigation.classList.contains("mobile-open")) {
+                closeMobileMenu();
+            }
 
         });
 
     });
 
-}
+    // Close menu when pressing Escape
+    document.addEventListener("keydown", (event) => {
 
+        if (
+            event.key === "Escape" &&
+            headerNavigation.classList.contains("mobile-open")
+        ) {
+            closeMobileMenu();
+        }
+
+    });
+
+}
 
 /* =====================================================
    HEADER SEARCH
