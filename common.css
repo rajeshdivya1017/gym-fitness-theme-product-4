@@ -1356,3 +1356,20 @@ main {
     }
 }
 
+/* =========================================
+   MOBILE HAMBURGER — BACKGROUND SCROLL LOCK
+========================================= */
+
+body.menu-open {
+    overflow: hidden;
+    overscroll-behavior: none;
+}
+
+body[data-menu-scroll-locked="true"] {
+    overflow: hidden;
+    overscroll-behavior: none;
+}
+
+#navLinks.is-open {
+    overscroll-behavior: contain;
+}
